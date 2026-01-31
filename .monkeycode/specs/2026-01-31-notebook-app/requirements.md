@@ -8,7 +8,10 @@
 
 | 术语 | 定义 |
 |------|------|
-| **系统 (System)** | 笔记本应用，一个支持模板化记录的个人日记 Web 应用 |
+| **系统 (System)** | 笔记本应用，一个支持模板化记录的个人日记跨平台应用，包含移动端 App、桌面端 App 和 Web 应用 |
+| **移动端应用 (Mobile App)** | 运行在 iOS 和 Android 平台上的原生应用 |
+| **桌面端应用 (Desktop App)** | 运行在 Windows、macOS 和 Linux 平台上的桌面应用 |
+| **Web 应用 (Web App)** | 运行在浏览器中的网页应用 |
 | **模板 (Template)** | 预定义的日记结构，包含一组可选字段，关联唯一分类 |
 | **分类 (Category)** | 日记的组织维度，如"工作"、"旅行"、"生活"等 |
 | **日记条目 (Diary Entry)** | 基于模板创建的单条日记记录 |
@@ -176,7 +179,49 @@
 4. WHEN 日记删除成功, 系统 SHALL 刷新列表并显示删除成功提示
 5. WHEN 日记删除失败, 系统 SHALL 显示错误信息
 
-### Requirement 13: 界面设计要求
+### Requirement 13: 响应式布局支持
+
+**User Story:** AS 用户, I want 应用在不同设备和平台上都能正常使用, so that 我可以在任何地方记录和查看日记
+
+#### Acceptance Criteria
+
+1. WHEN 用户在移动端设备访问应用, 系统 SHALL 使用移动端适配的界面布局
+2. WHEN 用户在桌面端设备访问应用, 系统 SHALL 使用桌面端适配的界面布局
+3. WHEN 用户调整浏览器窗口大小, 系统 SHALL 动态调整界面布局以适应屏幕尺寸
+4. WHEN 屏幕宽度小于768px, 系统 SHALL 启用移动端布局模式
+5. WHEN 屏幕宽度大于或等于768px, 系统 SHALL 启用桌面端布局模式
+6. WHEN 应用在移动端运行, 系统 SHALL 支持触摸手势操作
+7. WHEN 应用在桌面端运行, 系统 SHALL 支持鼠标和键盘快捷键操作
+
+### Requirement 14: 移动端应用支持
+
+**User Story:** AS 用户, I want 在 iOS 和 Android 设备上安装原生应用, so that 我可以在手机上方便地使用笔记本功能
+
+#### Acceptance Criteria
+
+1. WHEN 用户在 iOS 设备上访问应用下载链接, 系统 SHALL 提供 App Store 下载入口或 TestFlight 邀请
+2. WHEN 用户在 Android 设备上访问应用下载链接, 系统 SHALL 提供应用商店下载入口或 APK 安装包
+3. WHEN 用户在移动端应用中打开, 系统 SHALL 使用移动端优化的用户界面
+4. WHEN 用户在移动端应用中, 系统 SHALL 支持系统级的通知推送
+5. WHEN 用户在移动端应用中, 系统 SHALL 支持快捷方式小组件
+6. WHEN 用户在移动端应用中添加日记, 系统 SHALL 自动保存草稿防止意外丢失
+7. WHEN 用户在移动端应用中, 系统 SHALL 支持相机直接拍照插入日记
+
+### Requirement 15: 桌面端应用支持
+
+**User Story:** AS 用户, I want 在 Windows、macOS 和 Linux 上安装桌面应用, so that 我可以在电脑上获得更完整的记录体验
+
+#### Acceptance Criteria
+
+1. WHEN 用户在 Windows 平台访问应用下载链接, 系统 SHALL 提供 Windows 安装包
+2. WHEN 用户在 macOS 平台访问应用下载链接, 系统 SHALL 提供 macOS 安装包
+3. WHEN 用户在 Linux 平台访问应用下载链接, 系统 SHALL 提供通用 Linux 安装包或 AppImage 格式
+4. WHEN 用户在桌面端应用中打开, 系统 SHALL 使用桌面端优化的用户界面
+5. WHEN 用户在桌面端应用中, 系统 SHALL 支持系统级托盘图标
+6. WHEN 用户在桌面端应用中, 系统 SHALL 支持全局快捷键快速打开应用
+7. WHEN 用户在桌面端应用中, 系统 SHALL 支持离线模式完整功能
+
+### Requirement 16: 界面设计要求
 
 **User Story:** AS 用户, I want 使用温馨现代的界面, so that 我可以享受愉快的记录体验
 
@@ -187,20 +232,22 @@
 3. WHEN 用户使用应用, 系统 SHALL 减少操作步骤以降低上手成本
 4. WHEN 系统使用色彩, 系统 SHALL 使用柔和的配色方案降低视觉疲劳
 5. WHEN 系统使用字体, 系统 SHALL 选择清晰易读的字体
+6. WHEN 系统在移动端显示, 系统 SHALL 使用适合触摸操作的大尺寸交互元素
+7. WHEN 系统在桌面端显示, 系统 SHALL 合理利用大屏幕空间展示更多信息
 
-### Requirement 14: 隐私与安全
+### Requirement 17: 隐私与安全
 
 **User Story:** AS 用户, I want 确保我的数据私密安全, so that 我可以放心记录个人内容
 
 #### Acceptance Criteria
 
-1. WHEN 用户存储日记数据, 系统 SHALL 使用浏览器本地私密存储
+1. WHEN 用户存储日记数据, 系统 SHALL 使用设备本地私密存储
 2. WHEN 数据存储在本地, 系统 SHALL 确保数据仅用户本人可访问
 3. WHEN 用户执行导出操作, 系统 SHALL 仅由用户主动触发
 4. WHEN 用户导入数据, 系统 SHALL 仅处理用户选择的文件
 5. WHEN 用户使用 WebDAV, 系统 SHALL 仅连接用户配置的服务器
 
-### Requirement 15: 备份提醒
+### Requirement 18: 备份提醒
 
 **User Story:** AS 用户, I want 定期收到备份提醒, so that 我可以保障数据安全
 

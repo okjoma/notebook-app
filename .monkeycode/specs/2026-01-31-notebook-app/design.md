@@ -5,22 +5,29 @@ Updated: 2026-01-31
 
 ## Description
 
-笔记本应用是一个支持模板化记录的个人日记 Web 应用。应用采用纯前端架构，数据存储在浏览器本地，支持模板自定义、多场景记录、数据导出导入和 WebDAV 备份等核心功能。
+笔记本应用是一个支持模板化记录的个人日记跨平台应用。应用支持 Web 端、移动端（iOS/Android）和桌面端三种形态，数据存储在设备本地，支持模板自定义、多场景记录、数据导出导入和 WebDAV 备份等核心功能。
 
 ## Architecture
 
-### 系统架构图
+### 多平台架构图
 
 ```mermaid
 graph TB
-    subgraph "Presentation Layer"
+    subgraph "Cross-Platform Layer"
+        Shared[Shared Core]
         UI[UI Components]
-        Pages[Page Views]
+    end
+
+    subgraph "Presentation Layer"
+        Web[Web App]
+        Mobile[Mobile App]
+        Desktop[Desktop App]
     end
 
     subgraph "Application Layer"
         Store[State Store]
         Services[Business Services]
+        Platform[Platform Services]
     end
 
     subgraph "Data Layer"
@@ -35,9 +42,13 @@ graph TB
         AI[AI Service]
     end
 
+    Shared --> UI
+    Web --> Shared
+    Mobile --> Shared
+    Desktop --> Shared
     UI --> Store
-    Pages --> Store
     Store --> Services
+    Store --> Platform
     Services --> Storage
     Services --> Export
     Services --> WebDAV
@@ -76,6 +87,9 @@ graph LR
 | **AIService** | 调用 AI 服务生成日记摘要 |
 | **SearchService** | 提供日记搜索功能 |
 | **BackupReminder** | 管理备份提醒逻辑 |
+| **ResponsiveLayout** | 响应式布局管理，适配移动端和桌面端 |
+| **MobilePlatformService** | 移动端平台特定功能（通知、小组件、相机） |
+| **DesktopPlatformService** | 桌面端平台特定功能（托盘、快捷键、离线模式） |
 
 ### 接口定义
 
@@ -203,12 +217,30 @@ interface IStoreState {
         selectedTemplateId: string | null;
         selectedEntryId: string | null;
         isEditorOpen: boolean;
+        platform: PlatformType;           // 当前运行平台
+        layoutMode: LayoutMode;           // 当前布局模式（移动/桌面）
     };
     backup: {
         webDAVConfig: IWebDAVConfig;
         lastBackupTime: number | null;
         reminderDismissedUntil: number | null;
     };
+}
+
+type PlatformType = 'web' | 'ios' | 'android' | 'windows' | 'macos' | 'linux';
+type LayoutMode = 'mobile' | 'desktop';
+```
+
+#### IPlatformCapabilities
+
+```typescript
+interface IPlatformCapabilities {
+    supportsNotifications: boolean;       // 是否支持通知推送
+    supportsWidget: boolean;             // 是否支持小组件
+    supportsCamera: boolean;             // 是否支持相机
+    supportsTray: boolean;               // 是否支持托盘图标
+    supportsGlobalHotkey: boolean;       // 是否支持全局快捷键
+    supportsOfflineMode: boolean;         // 是否支持完整离线模式
 }
 ```
 
@@ -223,6 +255,8 @@ local-storage/
 │   │   └── {templateId}.json   # 单个模板文件
 │   ├── entries/                # 日记条目数据
 │   │   └── {entryId}.json      # 单个日记条目文件
+│   ├── drafts/                 # 草稿数据（移动端）
+│   │   └── {draftId}.json      # 草稿文件
 │   └── metadata.json           # 元数据（备份时间、配置等）
 ```
 
@@ -232,14 +266,28 @@ local-storage/
 {
     "version": "1.0.0",
     "lastBackupTime": 1738284800000,
+    "platform": "ios",
     "webDAVConfig": {
         "url": "",
         "username": "",
         "password": "",
         "enabled": false
+    },
+    "settings": {
+        "autoSaveDraft": true,
+        "notificationEnabled": true,
+        "theme": "light"
     }
 }
 ```
+
+### 技术选型
+
+| 平台 | 技术方案 | 说明 |
+|------|---------|------|
+| **Web** | React + Vite | 纯前端 Web 应用 |
+| **移动端** | React Native / Capacitor | 跨平台移动端应用 |
+| **桌面端** | Electron / Tauri | 跨平台桌面应用 |
 
 ## Correctness Properties
 
@@ -257,6 +305,9 @@ local-storage/
 2. **必填字段验证**: 保存日记前必填字段必须填写完整
 3. **日期范围限制**: 日期字段必须为有效的日期值
 4. **图片大小限制**: 单个图片不超过 5MB，单个日记图片总数不超过 10 张
+5. **响应式断点**: 屏幕宽度小于 768px 启用移动端布局，否则启用桌面端布局
+6. **草稿自动保存**: 移动端编辑日记时每隔 30 秒自动保存草稿
+7. **平台功能降级**: 当平台不支持特定功能时，隐藏或禁用该功能对应的 UI 元素
 
 ## Error Handling
 
@@ -270,6 +321,8 @@ local-storage/
 | **位置服务错误** | 用户拒绝定位、定位超时 | 允许手动输入地点信息 |
 | **AI 服务错误** | AI 摘要生成失败 | 显示生成失败提示，允许用户手动补充 |
 | **验证错误** | 字段验证不通过 | 在对应字段位置显示错误提示 |
+| **相机权限错误** | 用户拒绝相机权限 | 提示用户授予权限或从相册选择图片 |
+| **平台功能错误** | 平台不支持某功能 | 自动降级或隐藏该功能 |
 
 ### 错误提示文案
 
@@ -320,9 +373,18 @@ local-storage/
    - 网络失败时的降级处理
    - 存储不足时的错误提示
 
+3. **多平台兼容性测试**
+   - 移动端和桌面端界面适配测试
+   - 跨平台数据同步测试
+
 ## References
 
 [^1]: (外部链接) - [EARS (Easy Approach to Requirements Syntax)](https://www.stsc.hill.af.mil/consulting/everything/ears/)
 [^2]: (外部链接) - [INCOSE Requirements Quality Rules](https://www.incose.org/)
 [^3]: (外部链接) - [WebDAV Specification RFC 4918](https://tools.ietf.org/html/rfc4918)
 [^4]: (外部链接) - [Web Storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API)
+[^5]: (外部链接) - [React Native Documentation](https://reactnative.dev/)
+[^6]: (外部链接) - [Capacitor Documentation](https://capacitorjs.com/)
+[^7]: (外部链接) - [Electron Documentation](https://www.electronjs.org/)
+[^8]: (外部链接) - [Tauri Documentation](https://tauri.app/)
+[^9]: (外部链接) - [Responsive Web Design](https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Responsive_Design)
