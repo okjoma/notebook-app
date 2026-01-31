@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景渐变 -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fce7f3;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fda4af;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- 背景圆角矩形 -->
+  <rect x="0" y="0" width="1024" height="1024" rx="180" fill="url(#bgGradient)"/>
+
+  <!-- 笔记本主体 -->
+  <rect x="260" y="180" width="504" height="620" rx="20" fill="#ffffff" opacity="0.95"/>
+
+  <!-- 笔记本封面装饰 -->
+  <rect x="280" y="200" width="464" height="580" rx="15" fill="#fef3c7"/>
+
+  <!-- 笔记本脊线 -->
+  <line x1="512" y1="200" x2="512" y2="780" stroke="#fcd34d" stroke-width="8"/>
+
+  <!-- 笔记本文字线 -->
+  <line x1="310" y1="280" x2="470" y2="280" stroke="#fcd34d" stroke-width="4" opacity="0.5"/>
+  <line x1="310" y1="340" x2="470" y2="340" stroke="#fcd34d" stroke-width="4" opacity="0.5"/>
+  <line x1="310" y1="400" x2="470" y2="400" stroke="#fcd34d" stroke-width="4" opacity="0.5"/>
+  <line x1="310" y1="460" x2="470" y2="460" stroke="#fcd34d" stroke-width="4" opacity="0.5"/>
+  <line x1="310" y1="520" x2="430" y2="520" stroke="#fcd34d" stroke-width="4" opacity="0.5"/>
+
+  <line x1="554" y1="280" x2="714" y2="280" stroke="#fcd34d" stroke-width="4" opacity="0.5"/>
+  <line x1="554" y1="340" x2="714" y2="340" stroke="#fcd34d" stroke-width="4" opacity="0.5"/>
+  <line x1="554" y1="400" x2="714" y2="400" stroke="#fcd34d" stroke-width="4" opacity="0.5"/>
+  <line x1="554" y1="460" x2="714" y2="460" stroke="#fcd34d" stroke-width="4" opacity="0.5"/>
+  <line x1="554" y1="520" x2="674" y2="520" stroke="#fcd34d" stroke-width="4" opacity="0.5"/>
+
+  <!-- 装饰元素 - 心情图标 -->
+  <circle cx="780" cy="280" r="60" fill="#f87171" opacity="0.9"/>
+  <circle cx="765" cy="265" r="10" fill="#ffffff"/>
+  <circle cx="795" cy="265" r="10" fill="#ffffff"/>
+  <path d="M 755 305 Q 780 330 805 305" stroke="#ffffff" stroke-width="6" fill="none" stroke-linecap="round"/>
+
+  <!-- 装饰元素 - 位置图标 -->
+  <circle cx="260" cy="750" r="50" fill="#fbbf24" opacity="0.9"/>
+  <circle cx="260" cy="750" r="25" fill="#ffffff" opacity="0.3"/>
+  <circle cx="260" cy="750" r="15" fill="#fbbf24"/>
+
+  <!-- 装饰元素 - 相机图标 -->
+  <rect x="730" y="700" width="80" height="60" rx="10" fill="#34d399" opacity="0.9"/>
+  <circle cx="770" cy="730" r="20" fill="#ffffff" opacity="0.3"/>
+  <circle cx="770" cy="730" r="12" fill="#34d399"/>
+</svg>
